@@ -6,7 +6,7 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent; 
 import gnu.io.SerialPortEventListener; 
 import java.util.Enumeration;
-
+import java.util.Scanner;
 public class Serial_sender implements SerialPortEventListener {
 	SerialPort serialPort;
         /** The port we're normally going to use. */
@@ -123,7 +123,7 @@ public class Serial_sender implements SerialPortEventListener {
 			unitCode = reader.nextInt();
 			System.out.println("Enter on/off(0/1): ");
 			isOn = reader.nextInt();
-			sendCommand(houseCode, unitCode, (isOn==1));
+			main.sendCommand(houseCode, unitCode, (isOn==1));
 		}
 		
 		
