@@ -60,7 +60,6 @@ void send_package(int house_code, int unit_code, boolean on){
   }
   for(mask = 0b0001; mask<=8; mask<<=1){
     sendPair(unit_code & mask);
-    Serial.println(unit_code & mask);
   }  
   //send on
   sendPair(false);
@@ -75,7 +74,6 @@ void send_package(int house_code, int unit_code, boolean on){
 int h_code, u_code, is_on;
 
 void loop() {
-  Serial.println("Enter house code: ");
   while (Serial.available() <= 0);
    //transmit(true);
   while (Serial.available() > 0){
