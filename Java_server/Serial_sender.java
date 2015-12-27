@@ -7,6 +7,8 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener; 
 import java.util.Enumeration;
 import java.util.Scanner;
+import java.io.*; 
+import java.net.*;
 
 public class Serial_sender implements SerialPortEventListener {
 	SerialPort serialPort;
@@ -118,14 +120,20 @@ public class Serial_sender implements SerialPortEventListener {
 		Scanner reader = new Scanner(System.in);  // Reading from System.in
 		System.out.println("Started");
 		int houseCode, unitCode, isOn;
+		String clientSentence;
+		ServerSocket welcomeSocket = new ServerSocket(6789);
 		while(true){
-			System.out.println("Enter a house code: ");
+			Socket connectionSocket = welcomeSocket.accept();
+			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
+			/*System.out.println("Enter a house code: ");
 			houseCode = reader.nextInt();
 			System.out.println("Enter a unit code: ");
 			unitCode = reader.nextInt();
 			System.out.println("Enter on/off(0/1): ");
-			isOn = reader.nextInt();
-			main.sendCommand(houseCode, unitCode, (isOn==1));
+			isOn = reader.nextInt();*/
+			clientSentence = inFromClient.readLine();
+			System.out.println(clientSentence);
+			//main.sendCommand(houseCode, unitCode, (isOn==1));
 		}
 		
 		
