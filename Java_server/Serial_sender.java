@@ -75,10 +75,14 @@ public class Serial_sender implements SerialPortEventListener {
 			System.err.println(e.toString());
 		}
 	}
-	public void send_command(int houseCode, int unitCode, boolean on){
+	public void sendCommand(int houseCode, int unitCode, boolean on){
 		String data;
 		data = Integer.toString(houseCode) + "," + Integer.toString(unitCode) + "," + (on ? 1 : 0);
-		output.write(data.getBytes());
+		try{
+			output.write(data.getBytes());
+		}catch(Exception e){
+			System.err.println("Serial send failed");
+		}
 	}
 	/**
 	 * This should be called when you stop using the port.
@@ -109,14 +113,19 @@ public class Serial_sender implements SerialPortEventListener {
 	public static void main(String[] args) throws Exception {
 		Serial_sender main = new Serial_sender();
 		main.initialize();
-		Thread t=new Thread() {
-			public void run() {
-				//the following line will keep this app alive for 1000 seconds,
-				//waiting for events to occur and responding to them (printing incoming messages to console).
-				try {Thread.sleep(1000000);} catch (InterruptedException ie) {}
-			}
-		};
-		t.start();
+		Scanner reader = new Scanner(System.in);  // Reading from System.in
 		System.out.println("Started");
+		int houseCode, unitCode, isOn;
+		while(true){
+			System.out.println("Enter a house code: ");
+			houseCode = reader.nextInt();
+			System.out.println("Enter a unit code: ");
+			unitCode = reader.nextInt();
+			System.out.println("Enter on/off(0/1): ");
+			isOn = reader.nextInt();
+			sendCommand(houseCode, unitCode, (isOn==1));
+		}
+		
+		
 	}
 }
