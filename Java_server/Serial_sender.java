@@ -7,6 +7,7 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener; 
 import java.util.Enumeration;
 import java.util.Scanner;
+
 public class Serial_sender implements SerialPortEventListener {
 	SerialPort serialPort;
         /** The port we're normally going to use. */
@@ -77,7 +78,8 @@ public class Serial_sender implements SerialPortEventListener {
 	}
 	public void sendCommand(int houseCode, int unitCode, boolean on){
 		String data;
-		data = Integer.toString(houseCode) + "," + Integer.toString(unitCode) + "," + (on ? 1 : 0);
+		data = Integer.toString(houseCode) + "," + Integer.toString(unitCode) + "," + (on ? 1 : 0) + "\n";
+		System.out.println("Printing line: " + data);
 		try{
 			output.write(data.getBytes());
 		}catch(Exception e){
