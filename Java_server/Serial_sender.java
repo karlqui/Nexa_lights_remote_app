@@ -78,7 +78,7 @@ public class Serial_sender implements SerialPortEventListener {
 	public void send_command(int houseCode, int unitCode, boolean on){
 		String data;
 		data = Integer.toString(houseCode) + "," + Integer.toString(unitCode) + "," + (on ? 1 : 0);
-		output.write(data);
+		output.write(data.getBytes());
 	}
 	/**
 	 * This should be called when you stop using the port.
