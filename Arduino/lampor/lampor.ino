@@ -38,9 +38,13 @@ void sendPair(boolean b) {
   sendBit(b);
 }
 void control_lights(int house_code, int unit_code, boolean on){
-  send_package(house_code, unit_code, on);
+  digitalWrite(txPin, LOW);
   delayMicroseconds(10000);
   send_package(house_code, unit_code, on);
+  digitalWrite(txPin, LOW);
+  delayMicroseconds(10000);
+  send_package(house_code, unit_code, on);
+  digitalWrite(txPin, LOW);
   delayMicroseconds(10000);
   send_package(house_code, unit_code, on);
 }
@@ -74,9 +78,13 @@ void loop() {
   Serial.println("Enter house code: ");
   while (Serial.available() <= 0);
    //transmit(true);
-   control_lights(1, 4, true);
-  while (Serial.available() > 0)
-    Serial.read();
-  
+  while (Serial.available() > 0){
+    h_code = Serial.parseInt();
+    u_code = Serial.parseInt();
+    is_on = Serial.parseInt();
+    if (Serial.read() == '\n'){
+      control_lights(h_code, u_code, is_on);
+    }
+  }
 
 }
