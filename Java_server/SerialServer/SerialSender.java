@@ -3,14 +3,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import gnu.io.CommPortIdentifier; 
 import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent; 
-import gnu.io.SerialPortEventListener; 
+//import gnu.io.SerialPortEvent; 
+//import gnu.io.SerialPortEventListener; 
 import java.util.Enumeration;
 import java.util.Scanner;
-import java.io.*; 
-import java.net.*;
-
-public class Serial_sender implements SerialPortEventListener {
+package serialServer;
+public class SerialSender implements SerialPortEventListener {
 	SerialPort serialPort;
         /** The port we're normally going to use. */
 	private static final String PORT_NAMES[] = { 
@@ -25,20 +23,20 @@ public class Serial_sender implements SerialPortEventListener {
 	* converting the bytes into characters 
 	* making the displayed results codepage independent
 	*/
-	private BufferedReader input;
+	
 	/** The output stream to the port */
 	private OutputStream output;
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 	/** Default bits per second for COM port. */
 	private static final int DATA_RATE = 9600;
-
+	private static CommPortIdentifier portId;
 	public void initialize() {
                 // the next line is for Raspberry Pi and 
                 // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
                 System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttymxc3");
 
-		CommPortIdentifier portId = null;
+		portId = null;
 		Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 
 		//First, Find an instance of serial port as set in PORT_NAMES.
@@ -68,12 +66,12 @@ public class Serial_sender implements SerialPortEventListener {
 					SerialPort.PARITY_NONE);
 
 			// open the streams
-			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+			//input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 			output = serialPort.getOutputStream();
 
 			// add event listeners
-			serialPort.addEventListener(this);
-			serialPort.notifyOnDataAvailable(true);
+			/*serialPort.addEventListener(this);
+			serialPort.notifyOnDataAvailable(true);*/
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}
@@ -94,7 +92,7 @@ public class Serial_sender implements SerialPortEventListener {
 	 */
 	public synchronized void close() {
 		if (serialPort != null) {
-			serialPort.removeEventListener();
+			//serialPort.removeEventListener();
 			serialPort.close();
 		}
 	}
@@ -102,7 +100,7 @@ public class Serial_sender implements SerialPortEventListener {
 	/**
 	 * Handle an event on the serial port. Read the data and print it.
 	 */
-	public synchronized void serialEvent(SerialPortEvent oEvent) {
+	/*public synchronized void serialEvent(SerialPortEvent oEvent) {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
 				String inputLine=input.readLine();
@@ -112,30 +110,5 @@ public class Serial_sender implements SerialPortEventListener {
 			}
 		}
 		// Ignore all the other eventTypes, but you should consider the other ones.
-	}
-
-	public static void main(String[] args) throws Exception {
-		Serial_sender main = new Serial_sender();
-		main.initialize();
-		Scanner reader = new Scanner(System.in);  // Reading from System.in
-		System.out.println("Started");
-		int houseCode, unitCode, isOn;
-		String clientSentence;
-		ServerSocket welcomeSocket = new ServerSocket(6789);
-		while(true){
-			Socket connectionSocket = welcomeSocket.accept();
-			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
-			/*System.out.println("Enter a house code: ");
-			houseCode = reader.nextInt();
-			System.out.println("Enter a unit code: ");
-			unitCode = reader.nextInt();
-			System.out.println("Enter on/off(0/1): ");
-			isOn = reader.nextInt();*/
-			clientSentence = inFromClient.readLine();
-			System.out.println(clientSentence);
-			//main.sendCommand(houseCode, unitCode, (isOn==1));
-		}
-		
-		
-	}
+	}*/
 }
