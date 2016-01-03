@@ -7,26 +7,26 @@ import java.io.OutputStream;
 import gnu.io.CommPortIdentifier; 
 import gnu.io.SerialPort;
 import java.util.Enumeration;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.FileHandler;
 
 public class ConnectionThread extends Thread {
 	SerialPort serialPort;
-	private static final String PORT_NAMES[] = { 
-		//	"/dev/tty.usbserial-A9007UX1", // Mac OS X
-        //                "/dev/ttyACM0", // Raspberry Pi
-	     "/dev/ttymxc3", // Udoo
-	//		"/dev/ttyUSB0", // Linux
-		//	"COM3", // Windows
-	};
+	private final static Logger LOGGER = Logger.getLogger("ServerLogger"); 
+	private final static String SERIAL_PORT = "/dev/ttymxc3";
 	/** The output stream to the port */
 	private OutputStream output;
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 	/** Default bits per second for COM port. */
 	private static final int DATA_RATE = 9600;
-	CommPortIdentifier portId;
+	private CommPortIdentifier portId;
     private Socket socket = null;
+	
 	public ConnectionThread(Socket socket) {
 		super("MultiServerThread");
+		LOGGER.info("New thread started");
 		this.socket = socket;
 		System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttymxc3");
 		portId = null;
@@ -35,12 +35,8 @@ public class ConnectionThread extends Thread {
 		//First, Find an instance of serial port as set in PORT_NAMES.
 		while (portEnum.hasMoreElements()) {
 			CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
-			for (String portName : PORT_NAMES) {
-				if (currPortId.getName().equals(portName)) {
-					portId = currPortId;
-					break;
-				}
-			}
+			if(currPortId.getName().equals(SERIAL_PORT))
+				portId = currPortId;
 		}
 		if (portId == null) {
 			System.out.println("Could not find COM port.");
@@ -49,6 +45,7 @@ public class ConnectionThread extends Thread {
 	}
 
 	public void run() {
+		LOGGER.info("Thread running");
 		try {
 			//PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(
@@ -59,6 +56,7 @@ public class ConnectionThread extends Thread {
 			while ((inputLine = in.readLine()) != null) {
 				System.out.println(inputLine);
 				try{
+					LOGGER.finest("Received data: " + inputLine);
 					serialPort = (SerialPort) portId.open(this.getClass().getName(),
 					TIME_OUT);
 					serialPort.setSerialPortParams(DATA_RATE,
@@ -68,20 +66,21 @@ public class ConnectionThread extends Thread {
 					output = serialPort.getOutputStream();
 					inputLine += "\n";
 					output.write(inputLine.getBytes());
+					LOGGER.finest("Sent data over serial: " + inputLine);
 					serialPort.close();
 				}catch(Exception e){
-					System.out.println(e.getMessage());
-					e.printStackTrace();
+					LOGGER.warning(e.getCause().getMessage());
 				}
 				
 			if (inputLine.equals("Bye"))
 				break;
 			}
+			LOGGER.warning("Closing socket to client");
 			in.close();
 			socket.close();
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.warning(e.getCause().getMessage());
 		}
 	}
 }
